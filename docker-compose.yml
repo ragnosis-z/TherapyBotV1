@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database (optional, uncomment for production)
+  # postgres:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     POSTGRES_USER: chatbot_user
+  #     POSTGRES_PASSWORD: changeme
+  #     POSTGRES_DB: chatbot_db
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U chatbot_user"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # FastAPI Application
+  app:
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./chatbot.db
+      - DEBUG=True
+      - ENVIRONMENT=development
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - .:/app
+    depends_on:
+      # - postgres
+      - {}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  postgres_data:
