@@ -13,7 +13,7 @@ class EscalationEvent(Base):
     __tablename__ = "escalation_events"
 
     id = Column(String(36), primary_key=True, index=True)
-    user_id = Column(String(36), ForeignKey("users.id"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     
     # Escalation details
     escalation_type = Column(String(100), nullable=False)  # suicide, self_harm, severe_crisis, etc.
